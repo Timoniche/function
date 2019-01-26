@@ -26,7 +26,7 @@ private:
     template<typename fT>
     class f_holder : public f_holder_base {
     public:
-        f_holder(fT f) : f_holder_base(), _fun(f) {} //NOLINT
+        f_holder(fT f) : f_holder_base(), _fun(std::move(f)) {} //NOLINT
 
         retT call(argT ... args) override {
             return _fun(std::forward<argT>(args) ...);
