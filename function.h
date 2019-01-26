@@ -138,7 +138,7 @@ public:
             return (reinterpret_cast<f_holder_base *>(const_cast<unsigned char *>(_data.buffer)))->call(
                     std::forward<argT>(args)...);
         } else {
-            _data._call->call(std::forward<argT>(args) ...);
+            return _data._call->call(std::forward<argT>(args) ...);
         }
     }
 //_______________________________________________________________
