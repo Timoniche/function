@@ -38,6 +38,8 @@ struct A {
 int main() {
     //std::function<int()> f = A();
     function<int()> f = A();
+    //function<int()> f{A()};
+
     std::cout << f() << std::endl;
 //    typedef function<int (const int * , int)> int_function_with_two_args_t;
 //    function<void ()> f0;
