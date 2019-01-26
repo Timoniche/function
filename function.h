@@ -37,7 +37,7 @@ private:
     };
 //________________________________________________________________
 private:
-    static const size_t GAP_BYTE_SIZE = 32;
+    static const size_t GAP_BYTE_SIZE = 16;
 
     union any_data {
         call_t _call;
@@ -73,9 +73,8 @@ public:
         }
     }
 
-    function(function &&other) noexcept : is_small(std::move(other.is_small)) {
+    function(function &&other) noexcept {
         is_small = false;
-        new(&_data._call) call_t(nullptr);
         swap(other);
     }
 
@@ -93,8 +92,6 @@ public:
     ~function() {
         if (is_small) {
             ((f_holder_base *) (_data.buffer))->~f_holder_base();
-        } else {
-            _data._call.~unique_ptr();
         }
     }
 
