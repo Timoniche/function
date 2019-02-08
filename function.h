@@ -17,11 +17,11 @@ private:
 
         virtual ~f_holder_base() = default;
 
+        virtual std::unique_ptr<f_holder_base> clone() = 0;
+
         virtual retT call(argT ... args) = 0;
 
         virtual void fill_stack(void *address) = 0;
-
-        virtual void deploy_pointer(void *address) = 0;
     };
 
     typedef std::unique_ptr<f_holder_base> call_t;
@@ -42,8 +42,8 @@ private:
             new(address) f_holder<fT>(_fun);
         }
 
-        void deploy_pointer(void *address) override {
-            new(address) std::unique_ptr<f_holder<fT>>(new f_holder<fT>(_fun));
+        std::unique_ptr<f_holder_base> clone() override {
+            return std::make_unique<f_holder<fT>>(_fun);
         }
 
     private:
@@ -51,7 +51,7 @@ private:
     };
 //________________________________________________________________
 private:
-    static const size_t GAP_BYTE_SIZE = 64;
+    static const size_t GAP_BYTE_SIZE = 32;
 
     union any_data {
         call_t _call;
@@ -79,11 +79,11 @@ public:
     }
 
     function(const function &other) : is_small(other.is_small) {
-        auto f = reinterpret_cast<f_holder_base *>(const_cast<unsigned char *>(other._data.buffer));
         if (is_small) {
+            auto f = reinterpret_cast<f_holder_base *>(const_cast<unsigned char *>(other._data.buffer));
             f->fill_stack(&_data.buffer);
         } else {
-            f->deploy_pointer(&_data.buffer);
+            new(&_data._call) call_t(other._data._call->clone());
         }
     }
 
